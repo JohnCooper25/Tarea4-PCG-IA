@@ -1,5 +1,3 @@
-makefile:
-
 TARGET = Tarea_4
 CXX = g++
 CXXFLAGS = -Wall -O2
