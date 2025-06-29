@@ -22,11 +22,11 @@ void initializeMap() {
     map = vector<vector<Tile>>(HEIGHT, vector<Tile>(WIDTH, WALL));
 }
 
-void applyCellularAutomata(int iterations = 3) {
-    // Inicialización aleatoria
+void applyCellularAutomata(int iterations = 5) {
+    // Inicializacion aleatoria
     for (int y = 1; y < HEIGHT - 1; y++) {
         for (int x = 1; x < WIDTH - 1; x++) {
-            map[y][x] = (rand() % 100 < 55) ? WALL : PATH;
+            map[y][x] = (rand() % 100 < 65) ? WALL : PATH;
         }
     }
 
@@ -50,7 +50,8 @@ void applyCellularAutomata(int iterations = 3) {
     }
 }
 
-void applyRandomWalker(int walkers = 4, int steps = 35) {
+//****************Funcion de Random Walker***************/
+void applyRandomWalker(int walkers = 4, int steps = 50) {
     for (int w = 0; w < walkers; w++) {
         int x = rand() % WIDTH;
         int y = rand() % HEIGHT;
@@ -69,31 +70,33 @@ void applyRandomWalker(int walkers = 4, int steps = 35) {
     }
 }
 
+//***************Funcion para generacion de bloques blando y % de power ups******************/
 void placeSoftBlocksAndPowerUps() {
     for (int y = 1; y < HEIGHT - 1; y++) {
         for (int x = 1; x < WIDTH - 1; x++) {
             if (map[y][x] == PATH && rand() % 100 < 60) {
-                map[y][x] = (rand() % 100 < 20) ? POWER_UP : SOFT_BLOCK;
+                map[y][x] = (rand() % 100 < 25) ? POWER_UP : SOFT_BLOCK;
             }
         }
     }
 }
 
+//**************************Funcion para imprimir el mapa**********************/
 void printMap() {
     for (int y = 0; y < HEIGHT; y++) {
         for (int x = 0; x < WIDTH; x++) {
             switch (map[y][x]) {
-                case WALL: cout << "#"; break;
-                case PATH: cout << " "; break;
-                case SOFT_BLOCK: cout << "+"; break;
-                case POWER_UP: cout << "*"; break;
+                case WALL: cout << "#"; break;//*************bloque duro '#' **********/
+                case PATH: cout << " "; break;//**********camino ******** */
+                case SOFT_BLOCK: cout << "+"; break;//********bloque blando '+'********/
+                case POWER_UP: cout << "*"; break;//********power Up******** */
             }
         }
         cout << endl;
     }
 }
 
-// Verifica si todas las celdas PATH son alcanzables desde el punto inicial
+// verifica la vialidad de las celdas en el path
 bool isMapFullyConnected() {
     vector<vector<bool>> visited(HEIGHT, vector<bool>(WIDTH, false));
     queue<pair<int, int>> q;
@@ -133,7 +136,8 @@ bfs_start:
     return true;
 }
 
-void scatterHardBlocksInOpenAreas(int chance = 15) {
+//**************Funcion encargada de evitar zonas abiertas demasiado grandes */
+void scatterHardBlocksInOpenAreas(int chance = 20) {
     for (int y = 1; y < HEIGHT - 1; y++) {
         for (int x = 1; x < WIDTH - 1; x++) {
             if (map[y][x] != PATH) continue;
@@ -147,19 +151,20 @@ void scatterHardBlocksInOpenAreas(int chance = 15) {
                 }
             }
 
-            // Si está en una zona muy abierta, chance de convertir en muro
-            if (pathNeighbors >= 5 && rand() % 100 < chance) {
+            
+            if (pathNeighbors >= 6 && rand() % 100 < chance) {
                 map[y][x] = WALL;
             }
         }
     }
 }
 
+//****************llamado de funciones para la generacion completa del mapa*************/
 void generateMap() {
     initializeMap();
-    applyCellularAutomata();      // Estructura base
-    applyRandomWalker();          // Asegura conexión
-    placeSoftBlocksAndPowerUps(); // Inserta power-ups y bloques blandos
+    applyCellularAutomata();      // estructura base
+    applyRandomWalker();          // asegura conexion con caminos
+    placeSoftBlocksAndPowerUps(); // power-ups y bloques blandos
     scatterHardBlocksInOpenAreas(); //bloques duros en zonas abiertas <%
 }
 
